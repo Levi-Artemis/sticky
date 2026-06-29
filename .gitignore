@@ -1,0 +1,6 @@
+.build/
+StickyNotes.app/
+StickyNotes.zip
+.DS_Store
+*.swp
+*.swo
