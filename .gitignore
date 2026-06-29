@@ -4,3 +4,4 @@ StickyNotes.zip
 .DS_Store
 *.swp
 *.swo
+.env
