@@ -44,6 +44,13 @@ final class NoteManager {
         return note
     }
 
+    @discardableResult
+    func add(_ note: NoteModel) -> NoteModel {
+        notes.append(note)
+        save()
+        return note
+    }
+
     func delete(_ id: UUID) {
         notes.removeAll { $0.id == id }
         save()

@@ -12,8 +12,12 @@
     <string>6.0</string>
     <key>CFBundleName</key>
     <string>Sticky Notes</string>
+    <key>CFBundleDisplayName</key>
+    <string>Sticky Notes</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.productivity</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>CFBundleVersion</key>

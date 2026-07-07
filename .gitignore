@@ -1,5 +1,5 @@
 .build/
-StickyNotes.app/
+*.app/
 StickyNotes.zip
 .DS_Store
 *.swp

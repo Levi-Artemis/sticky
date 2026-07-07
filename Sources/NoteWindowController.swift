@@ -1,6 +1,12 @@
 import Cocoa
 import SwiftUI
 
+private final class TitlebarIgnoringHostingView<Content: View>: NSHostingView<Content> {
+    override var safeAreaInsets: NSEdgeInsets {
+        NSEdgeInsets()
+    }
+}
+
 final class NoteWindowController: NSWindowController, NSWindowDelegate {
 
     private var note: NoteModel
@@ -42,11 +48,18 @@ final class NoteWindowController: NSWindowController, NSWindowDelegate {
         window.isOpaque = false
         window.backgroundColor = .clear
         window.contentMinSize = NSSize(width: 200, height: 200)
+        [
+            NSWindow.ButtonType.closeButton,
+            .miniaturizeButton,
+            .zoomButton,
+        ].forEach { buttonType in
+            window.standardWindowButton(buttonType)?.isHidden = true
+        }
 
         super.init(window: window)
         window.delegate = self
 
-        let hostingView = NSHostingView(
+        let hostingView = TitlebarIgnoringHostingView(
             rootView: NoteView(
                 note: note,
                 onUpdate: { [weak self] updatedNote in
@@ -70,6 +83,14 @@ final class NoteWindowController: NSWindowController, NSWindowDelegate {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    var noteID: UUID {
+        note.id
+    }
+
+    var currentNote: NoteModel {
+        note
     }
 
     deinit {

@@ -79,5 +79,11 @@ else {
     exit(1)
 }
 
-try pngData.write(to: URL(fileURLWithPath: "StickyNotes.app/Contents/Resources/icon.png"))
+let appBundlePath = CommandLine.arguments.dropFirst().first ?? "Sticky Notes.app"
+let iconPath = URL(fileURLWithPath: appBundlePath)
+    .appendingPathComponent("Contents")
+    .appendingPathComponent("Resources")
+    .appendingPathComponent("icon.png")
+
+try pngData.write(to: iconPath)
 print("Icon saved")
