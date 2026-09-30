@@ -65,6 +65,7 @@ struct NoteView: View {
     private var expandedToolbarContent: some View {
         HStack(spacing: 12) {
             pinButton
+            hideButton
 
             Spacer()
 
@@ -174,6 +175,7 @@ struct NoteView: View {
     private var compactToolbarContent: some View {
         HStack(spacing: 12) {
             pinButton
+            hideButton
 
             Spacer()
 
@@ -277,6 +279,18 @@ struct NoteView: View {
         }
         .buttonStyle(.plain)
         .help(note.isPinned ? "取消釘選" : "釘選在最上方")
+    }
+
+    private var hideButton: some View {
+        Button {
+            note.isHidden = true
+            onUpdate(note)
+        } label: {
+            Image(systemName: "eye.slash")
+                .foregroundColor(adaptiveForegroundColor)
+        }
+        .buttonStyle(.plain)
+        .help("隱藏便利籤（從選單列圖示重新顯示）")
     }
 
     private var editor: some View {

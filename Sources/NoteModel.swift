@@ -213,6 +213,7 @@ struct NoteModel: Codable, Identifiable {
     var styleRuns: [NoteTextStyleRun] = []
     var colorIndex = 0
     var isPinned = false
+    var isHidden = false
     var fontSize = 14.0
     var positionX = 300.0
     var positionY = 300.0
@@ -229,6 +230,7 @@ struct NoteModel: Codable, Identifiable {
         styleRuns: [NoteTextStyleRun] = [],
         colorIndex: Int = 0,
         isPinned: Bool = false,
+        isHidden: Bool = false,
         fontSize: Double = 14.0,
         positionX: Double = 300.0,
         positionY: Double = 300.0,
@@ -241,6 +243,7 @@ struct NoteModel: Codable, Identifiable {
         self.styleRuns = styleRuns
         self.colorIndex = colorIndex
         self.isPinned = isPinned
+        self.isHidden = isHidden
         self.fontSize = fontSize
         self.positionX = positionX
         self.positionY = positionY
@@ -255,6 +258,7 @@ struct NoteModel: Codable, Identifiable {
         case styleRuns
         case colorIndex
         case isPinned
+        case isHidden
         case fontSize
         case positionX
         case positionY
@@ -274,6 +278,7 @@ struct NoteModel: Codable, Identifiable {
         )
         colorIndex = try container.decodeIfPresent(Int.self, forKey: .colorIndex) ?? 0
         isPinned = try container.decodeIfPresent(Bool.self, forKey: .isPinned) ?? false
+        isHidden = try container.decodeIfPresent(Bool.self, forKey: .isHidden) ?? false
         fontSize = try container.decodeIfPresent(Double.self, forKey: .fontSize) ?? 14.0
         positionX = try container.decodeIfPresent(Double.self, forKey: .positionX) ?? 300.0
         positionY = try container.decodeIfPresent(Double.self, forKey: .positionY) ?? 300.0
@@ -289,6 +294,7 @@ struct NoteModel: Codable, Identifiable {
         try container.encode(styleRuns, forKey: .styleRuns)
         try container.encode(colorIndex, forKey: .colorIndex)
         try container.encode(isPinned, forKey: .isPinned)
+        try container.encode(isHidden, forKey: .isHidden)
         try container.encode(fontSize, forKey: .fontSize)
         try container.encode(positionX, forKey: .positionX)
         try container.encode(positionY, forKey: .positionY)

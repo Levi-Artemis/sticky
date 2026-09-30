@@ -24,7 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             noteManager.update(note)
             showWindow(for: note)
         } else {
-            noteManager.notes.forEach { showWindow(for: $0) }
+            noteManager.notes.filter { !$0.isHidden }.forEach { showWindow(for: $0) }
         }
 
         rebuildMenu()
@@ -291,7 +291,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             )
             item.representedObject = note.id.uuidString
             item.target = self
+            if note.isHidden {
+                item.image = NSImage(systemSymbolName: "eye.slash", accessibilityDescription: "已隱藏")
+                item.toolTip = "已隱藏，點選以重新顯示"
+            }
             menu.addItem(item)
+
+            // Holding Option swaps a visible note's item for a "hide" action.
+            if !note.isHidden {
+                let hideItem = NSMenuItem(
+                    title: "隱藏：\(preview)",
+                    action: #selector(hideNoteFromMenu(_:)),
+                    keyEquivalent: ""
+                )
+                hideItem.representedObject = note.id.uuidString
+                hideItem.target = self
+                hideItem.image = NSImage(systemSymbolName: "eye.slash", accessibilityDescription: nil)
+                hideItem.keyEquivalentModifierMask = .option
+                hideItem.isAlternate = true
+                menu.addItem(hideItem)
+            }
         }
 
         if !noteManager.notes.isEmpty {
@@ -531,6 +550,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for (index, note) in notes.enumerated() {
             var importedNote = note
             importedNote.id = UUID()
+            importedNote.isHidden = false
             let resizedLegacyImages = importedNote.normalizeLegacyImageDisplaySizes()
             let migratedImages = importedNote.ensureInlineImagePlaceholders()
             importedNote.styleRuns = NoteTextStyleRun.normalized(
@@ -578,13 +598,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
               let id = UUID(uuidString: uuidString)
         else { return }
 
-        if let controller = windowControllers[id] {
+        if var note = noteManager.notes.first(where: { $0.id == id }), note.isHidden {
+            note.isHidden = false
+            noteManager.update(note)
+            showWindow(for: note)
+            rebuildMenu()
+        } else if let controller = windowControllers[id] {
             controller.window?.orderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
         } else if let note = noteManager.notes.first(where: { $0.id == id })
         {
             showWindow(for: note)
         }
+    }
+
+    @objc private func hideNoteFromMenu(_ sender: NSMenuItem) {
+        guard let uuidString = sender.representedObject as? String,
+              let id = UUID(uuidString: uuidString),
+              var note = noteManager.notes.first(where: { $0.id == id })
+        else { return }
+
+        if let controller = windowControllers[id] {
+            controller.savePosition()
+            note = controller.currentNote
+        }
+        note.isHidden = true
+        noteManager.update(note)
+        // Update the manager before closing so windowWillClose's savePosition
+        // can't overwrite the flag with the controller's stale copy.
+        windowControllers[id]?.markHidden()
+        windowControllers[id]?.close()
+        rebuildMenu()
     }
 
     // MARK: - Dock Visibility

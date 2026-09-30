@@ -68,6 +68,10 @@ final class NoteWindowController: NSWindowController, NSWindowDelegate {
                     self.noteManager.update(updatedNote)
                     self.syncWindowLevel()
                     self.onChange()
+                    if updatedNote.isHidden {
+                        // Defer so the SwiftUI button action finishes before the window goes away.
+                        DispatchQueue.main.async { self.close() }
+                    }
                 },
                 onDelete: { [weak self] in
                     guard let self = self else { return }
@@ -104,6 +108,10 @@ final class NoteWindowController: NSWindowController, NSWindowDelegate {
         note.width = window.frame.width
         note.height = window.frame.height
         noteManager.update(note)
+    }
+
+    func markHidden() {
+        note.isHidden = true
     }
 
     private func syncWindowLevel() {
